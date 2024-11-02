@@ -1,142 +1,154 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import reminder from "../assets/reminder.jpeg";
+import event from "../assets/event.jpg";
+import events from "../assets/events.jpg";
+import reminders from "../assets/reminders.jpeg";
+import signup from "../assets/signup.jpg";
+import calender from "../assets/calender.png";
 
-
+import Testimonials from "../components/Testimonials";
+import Footer from "../components/Footer/Footer";
+import Herosection from "../components/Herosection";
 
 const Home = () => {
   return (
-    <div className="bg-gray-100">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-center py-[7rem]">
-        <h1 className="text-6xl font-bold mb-4">Your Ultimate Calendar</h1>
-        <p className="mb-8 text-lg">Effortlessly organize your life, manage events, and stay on top of your schedule.</p>
-        
-       <Link to={"/signup"}>
-        <button className="bg-white text-blue-500 px-6 py-3 rounded-lg font-semibold mr-4 transition duration-300 hover:bg-transparent hover:border hover:text-white">Sign Up</button>
-       </Link>
-       
-       <Link to={"/login"}>
-        <button className="border border-white px-6 py-3 rounded-lg font-semibold transition duration-300 hover:bg-white hover:text-blue-500">Login</button>
-       </Link>
+    <div className="bg-gray-200 bg-opacity-35">
+      {/* hero section */}
+      <div>
+        <Herosection />
+      </div>
 
-      </section>
+      <div className=" relative z-20 flex items-center justify-center md:container md:mx-auto -translate-y-10 sm:-translate-y-14 md:-translate-y-20 lg:-translate-y-24 xl:-translate-y-30 p-3  drop-shadow-xl ">
+        <img src={calender} className=" object-cover" alt="" />
+      </div>
 
       {/* Features Overview */}
-      <section className="py-20">
-        <h2 className="text-5xl text-center mb-12">Features That Matter</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-6">
-        <div class="cursor-pointer group relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96 hover:shadow-lg transition-shadow duration-300">
-       <div class="relative h-56 m-2.5 overflow-hidden text-white rounded-md">
-    <img class="transition-transform duration-500 ease-[cubic-bezier(0.25, 1, 0.5, 1)] transform group-hover:scale-110" 
-         src="https://images.unsplash.com/photo-1496436818536-e239445d3327?q=80&w=1200" alt="investment-seed-round" />
-  </div>
-  <div class="p-4">
-    <h6 class="mb-2 text-slate-800 text-xl font-semibold">
-      Successful Seed Round
-    </h6>
-    <p class="text-slate-600 leading-normal font-light">
-      We are thrilled to announce the completion of our seed round, securing $2M in investment to fuel product development and market expansion.
-    </p>
-  </div>
 
-</div> 
-<div class="cursor-pointer group relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96 hover:shadow-lg transition-shadow duration-300">
-  <div class="relative h-56 m-2.5 overflow-hidden text-white rounded-md">
-    <img class="transition-transform duration-500 ease-[cubic-bezier(0.25, 1, 0.5, 1)] transform group-hover:scale-110" 
-         src="https://images.unsplash.com/photo-1496436818536-e239445d3327?q=80&w=1200" alt="investment-seed-round" />
-  </div>
-  <div class="p-4">
-    <h6 class="mb-2 text-slate-800 text-xl font-semibold">
-      Successful Seed Round
-    </h6>
-    <p class="text-slate-600 leading-normal font-light">
-      We are thrilled to announce the completion of our seed round, securing $2M in investment to fuel product development and market expansion.
-    </p>
-  </div>
+      <section className="">
+        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center mb-4 text-indigo-500 font-semibold">
+          Features That Matter
+        </h2>
 
-</div> 
-          <div class="cursor-pointer group relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96 hover:shadow-lg transition-shadow duration-300">
-  <div class="relative h-56 m-2.5 overflow-hidden text-white rounded-md">
-    <img class="transition-transform duration-500 ease-[cubic-bezier(0.25, 1, 0.5, 1)] transform group-hover:scale-110" 
-         src="https://images.unsplash.com/photo-1496436818536-e239445d3327?q=80&w=1200" alt="investment-seed-round" />
-  </div>
-  <div class="p-4">
-    <h6 class="mb-2 text-slate-800 text-xl font-semibold">
-      Successful Seed Round
-    </h6>
-    <p class="text-slate-600 leading-normal font-light">
-      We are thrilled to announce the completion of our seed round, securing $2M in investment to fuel product development and market expansion.
-    </p>
-  </div>
-  
-</div> 
+        {/* Event Feature */}
+        <div className="bg-white  mx-3 p-2 sm:container sm:mx-auto rounded-xl shadow-lg transition-transform duration-300 ease-in-out hover:shadow-2xl">
+          <div className="flex flex-col md:flex-row items-center mb-12 px-6 transition-transform duration-300 ease-in-out ">
+            <div className="md:w-1/2">
+              <img
+                className="w-full h-[160px] sm:h-[220px] md:h-[280px] lg:h-full  object-cover rounded-lg shadow-lg transition-transform duration-300 ease-in-out "
+                src={event}
+                alt="Organize Your Events"
+              />
+            </div>
+
+            <div className="md:w-1/2  p-2 text-center mt-2 ">
+              <h6 className="mb-2 text-indigo-800 text-sm sm:text-lg font-semibold hover:text-indigo-600 transition-colors duration-300 ">
+                Organize Your Events
+              </h6>
+              <p className=" text-gray-600 leading-normal font-light text-[10px] sm:text-sm mb-4 ">
+                Manage your events with ease and get reminded before they start.
+                Our intuitive interface allows you to quickly create, edit, and
+                delete events without hassle.
+              </p>
+            </div>
+          </div>
+
+          {/* Reminder Feature */}
+          <div className="flex flex-col md:flex-row items-center mb-12 px-6 transition-transform duration-300 ease-in-out  text-center">
+            <div className="md:w-1/2 order-2 md:order-1 p-6">
+              <h6 className="mb-2 text-indigo-800  font-semibold hover:text-indigo-600 transition-colors duration-300 sm:text-lg text-sm">
+                Set Reminders
+              </h6>
+              <p className="text-gray-600 leading-normal font-light text-[10px] sm:text-sm mb-4">
+                Get timely notifications via email or push to never miss an
+                event. Tailor your reminder settings for each event to fit your
+                needs.
+              </p>
+            </div>
+            <div className="md:w-1/2 order-1 md:order-2">
+              <img
+                className=" w-[250px]  h-[180px] sm:w-[350px]  sm:h-[220px] md:w-full md:h-[300px] lg:h-full  object-cover rounded-lg shadow-lg transition-transform duration-300 ease-in-out "
+                src={reminder}
+                alt="Set Reminders"
+              />
+            </div>
+          </div>
         </div>
       </section>
 
       {/* How It Works */}
+
       <section className="py-20 bg-gray-100">
-        <h2 className="text-5xl text-center mb-12">How It Works</h2>
-        <div className="flex flex-col md:flex-row justify-around px-6">
-          <div className="text-center mb-8">
-            <img src="https://via.placeholder.com/100" alt="Step 1" className="mx-auto mb-4" />
-            <h3 className="text-2xl font-semibold">1. Sign Up</h3>
-            <p>Create your account in under a minute using just your email.</p>
+        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center mb-4 text-indigo-500 font-semibold">
+          How It Works
+        </h2>
+
+        <div className="flex flex-col md:flex-row justify-around px-6 space-y-6 md:space-y-0 md:space-x-6">
+          {/* Card for Sign Up */}
+          <div className="relative grid h-[15rem] sm:h-[20rem] max-w-full flex-col items-end justify-center overflow-hidden rounded-lg bg-white shadow-lg">
+            <div
+              className="absolute inset-0 m-0 h-full w-full overflow-hidden rounded-none bg-cover bg-center"
+              style={{ backgroundImage: `url(${signup})` }}
+            >
+              <div className="absolute inset-0 h-full w-full bg-gradient-to-t from-black/90 via-black/70"></div>
+            </div>
+            <div className="relative text-center p-6 px-6 py-10 md:px-12">
+              <h3 className="mb-6 text-3xl font-medium text-white">
+                1. Sign Up
+              </h3>
+              <p className="text-slate-300">
+                Create your account in under a minute using just your email.
+              </p>
+            </div>
           </div>
-          <div className="text-center mb-8">
-            <img src="https://via.placeholder.com/100" alt="Step 2" className="mx-auto mb-4" />
-            <h3 className="text-2xl font-semibold">2. Create Events</h3>
-            <p>Easily add events with a few clicks and set your preferences.</p>
+
+          {/* Card for Create Events */}
+          <div className="relative grid h-[15rem] sm:h-[20rem] max-w-full  flex-col items-end justify-center overflow-hidden rounded-lg bg-white shadow-lg">
+            <div
+              className="absolute inset-0 m-0 h-full w-full overflow-hidden rounded-none bg-cover bg-center"
+              style={{ backgroundImage: `url(${events})` }}
+            >
+              <div className="absolute inset-0 h-full w-full bg-gradient-to-t from-black/90 via-black/70"></div>
+            </div>
+            <div className="relative text-center p-6 px-6 py-10 md:px-12">
+              <h3 className="mb-6 text-3xl font-medium text-white">
+                2. Create Events
+              </h3>
+              <p className="text-slate-300">
+                Easily add events with a few clicks and set your preferences.
+              </p>
+            </div>
           </div>
-          <div className="text-center mb-8">
-            <img src="https://via.placeholder.com/100" alt="Step 3" className="mx-auto mb-4" />
-            <h3 className="text-2xl font-semibold">3. Set Reminders</h3>
-            <p>Get reminders via email or push notifications to stay on track.</p>
+
+          {/* Card for Set Reminders */}
+          <div className="relative grid h-[15rem] sm:h-[20rem] max-w-full  flex-col items-end justify-center overflow-hidden rounded-lg bg-white shadow-lg">
+            <div
+              className="absolute inset-0 m-0 h-full w-full overflow-hidden rounded-none bg-cover bg-center"
+              style={{ backgroundImage: `url(${reminders})` }}
+            >
+              <div className="absolute inset-0 h-full w-full bg-gradient-to-t from-black/90 via-black/70"></div>
+            </div>
+            <div className="relative text-center p-6 px-6 py-10 md:px-12">
+              <h3 className="mb-6 text-3xl font-medium text-white">
+                3. Set Reminders
+              </h3>
+              <p className="text-slate-300">
+                Get reminders via email or push notifications to stay on track.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* User Testimonials */}
-      <section className="py-20">
-        <h2 className="text-5xl text-center mb-12">What Our Users Say</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-6">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <p className="italic">"This calendar has transformed the way I organize my life! I can't imagine going back to the old way."</p>
-            <h4 className="font-bold mt-4">- Sarah J.</h4>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <p className="italic">"Reminders keep me on track. I love how intuitive it is to use!"</p>
-            <h4 className="font-bold mt-4">- Mark T.</h4>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <p className="italic">"Sharing my calendar with friends has made planning events so much easier!"</p>
-            <h4 className="font-bold mt-4">- Emma L.</h4>
-          </div>
-        </div>
-      </section>
-
-      {/* App Interface Preview */}
-      <section className="py-20 bg-gray-100">
-        <h2 className="text-5xl text-center mb-12">See It in Action</h2>
-        <div className="flex justify-center mb-4">
-          <img src="https://via.placeholder.com/500x300" alt="App Preview" className="w-full max-w-2xl" />
-        </div>
-        <p className="text-center">Watch our demo video to learn more about the features and functionalities!</p>
-        <div className="flex justify-center mt-4">
-          <button className="bg-blue-500 text-white px-6 py-3 rounded-lg transition duration-300 hover:bg-blue-600">Watch Demo</button>
-        </div>
+      <section className="">
+        <Testimonials />
       </section>
 
       {/* Footer */}
-      <footer className="bg-blue-600 text-white py-6">
-        <div className="flex justify-center space-x-6">
-          <a href="/terms" className="hover:underline">Terms of Service</a>
-          <a href="/privacy" className="hover:underline">Privacy Policy</a>
-          <a href="/contact" className="hover:underline">Contact Us</a>
-        </div>
-        <div className="text-center mt-4">
-          &copy; {new Date().getFullYear()} Your Calendar. All rights reserved.
-        </div>
-      </footer>
+
+      <div className="">
+        <Footer />
+      </div>
     </div>
   );
 };

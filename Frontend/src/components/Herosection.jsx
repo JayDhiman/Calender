@@ -1,13 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { FaSquareFacebook } from "react-icons/fa6";
-import { FaInstagram } from "react-icons/fa6";
 
-function Footer() {
+const Herosection = () => {
   return (
-    <>
-
-    <footer className="relative bg-gradient-to-r from-indigo-800 via-purple-900 to-gray-900 text-white text-center py-12 sm:py-20  overflow-hidden mt-12">
+<>
+<section className="relative bg-gradient-to-r from-indigo-800 via-purple-900 to-gray-900 text-white text-center py-12 sm:py-20 md:py-24 lg:py-32 xl:py-40 overflow-hidden">
   {/* Background Shapes */}
   <div className="absolute inset-0 z-10">
     {/* Circle 1 */}
@@ -26,30 +23,28 @@ function Footer() {
 
   {/* Content */}
   <div className="relative container mx-auto px-4 z-20">
-    <h2 className="text-xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-4">
-      Stay Connected
-    </h2>
+    <h1 className="text-xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-4">
+      Your Ultimate Calendar
+    </h1>
     <p className="text-[10px] sm:text-base md:text-lg lg:text-xl mb-3 sm:mb-7">
-      Follow us on social media and stay updated with our latest features!
+      Effortlessly organize your life, manage events, and stay on top of your schedule.
     </p>
-    <div className="flex justify-center space-x-4 mb-4">
-      <Link to="/terms" className="text-sm sm:text-base hover:underline">Terms of Service</Link>
-      <Link to="/privacy" className="text-sm sm:text-base hover:underline">Privacy Policy</Link>
-    </div>
     <div className="flex justify-center space-x-4">
-      {/* Add social media icons here */}
-    <FaSquareFacebook className='text-[24px]'/>
-    <FaInstagram className='text-[24px]'/>
-  
+      <Link to="/signup">
+        <button className="bg-white text-blue-600 px-3 py-1 text-[9px] sm:text-sm lg:text-lg sm:px-6 sm:py-3 rounded-lg font-semibold transition duration-300 hover:bg-transparent hover:border hover:text-white">
+          Sign Up
+        </button>
+      </Link>
+      <Link to="/login">
+        <button className="border border-white px-3 py-1 text-[9px] sm:text-sm lg:text-lg sm:px-6 sm:py-3 rounded-lg font-semibold transition duration-300 hover:bg-white hover:text-blue-600">
+          Login
+        </button>
+      </Link>
     </div>
   </div>
-</footer>
-
-        <div className="text-center mt-4">
-          &copy; {new Date().getFullYear()} Your Calendar. All rights reserved.
-        </div>
-        </>
+</section>
+</>
   )
 }
 
-export default Footer
+export default Herosection
