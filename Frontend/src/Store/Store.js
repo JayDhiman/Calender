@@ -1,16 +1,22 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import userApi from '../Api/userApi.js'; // Ensure this is the correct path
+import authReducer from '../Features/authSlice.js';
+import userApi from '../Api/userApi';
+import eventsApi  from '../Api/eventsApi.js'
 
 const store = configureStore({
   reducer: {
-    [userApi.reducerPath]: userApi.reducer, // Correctly add userApi's reducer
+    auth: authReducer,
+    [userApi.reducerPath]: userApi.reducer,
+    [eventsApi.reducerPath]: eventsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(userApi.middleware), // Correctly add userApi's middleware
+    getDefaultMiddleware().concat(
+      userApi.middleware,
+      eventsApi.middleware 
+      ),
 });
 
-// Optional: Setup listeners for RTK Query caching
 setupListeners(store.dispatch);
 
 export default store;

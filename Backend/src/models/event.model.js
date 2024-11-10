@@ -1,60 +1,37 @@
-import mongoose, { Schema } from "mongoose";
+// models/event.model.js
+import mongoose from 'mongoose';
 
-const eventSchema = new Schema({
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
+const eventSchema = new mongoose.Schema({
     title: {
-      type: String,
-      required: [true, 'Please enter an event title'],
+        type: String,
+        required: [true, 'Please provide a title'],
     },
     description: {
-      type: String,
-      default: '',
+        type: String,
+        required: [true, 'Please provide a description'],
     },
-    dateTime: {
-      type: Date,
-      required: [true, 'Please enter the date and time of the event'],
+    startTime: {
+        type: Date,
+        required: [true, 'Please provide the start time'],
     },
-    duration: {
-      type: Number,
-      default: 60, // in minutes
+    endTime: {
+        type: Date,
+        required: [true, 'Please provide the end time'],
     },
-    location: {
-      type: String,
-      default: '',
-    },
-    participants: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    }],
     reminderTime: {
-      type: Date, // Set a specific time for reminder
+        type: Number, // In minutes before the event (e.g., 30 minutes)
+        default: 0,
     },
-    repeat: {
-      type: String,
-      enum: ['none', 'daily', 'weekly', 'monthly', 'yearly'],
-      default: 'none',
+    category: {
+        type: String,
+        enum: ['Work', 'Personal', 'Meeting', 'Others'], // Example categories
+        default: 'Others',
     },
-    colorCode: {
-      type: String,
-      default: '#0000FF', // Default color (blue)
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // Assuming each event is tied to a user
+        required: true,
     },
-    isAllDay: {
-      type: Boolean,
-      default: false,
-    },
-    status: {
-      type: String,
-      enum: ['scheduled', 'completed', 'cancelled'],
-      default: 'scheduled',
-    },
-  }, {
-    timestamps: true,
-  });
+}, { timestamps: true });
 
-const Event = mongoose.model('Event',eventSchema)
-
-export default Event;
+export const Event = mongoose.model('Event', eventSchema);

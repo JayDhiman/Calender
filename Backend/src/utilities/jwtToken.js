@@ -1,4 +1,4 @@
-
+// /utils/jwtToken.js
 import jwt from 'jsonwebtoken';
 
 const signToken = (userId) => {

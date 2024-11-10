@@ -1,13 +1,21 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react'
 
-const NavBar = () => {
+const Navbar = () => {
   return (
-    <nav>
-      <Link to="/login">Login</Link>
-      <Link to="/signup">Sign Up</Link>
-    </nav>
-  );
-};
+<>
+    <nav className="w-full h-fit p-2 flex  bg-slate-200 bg-opacity-30  ">
+      <div className="flex items-center justify-center gap-3">
+        <div className="w-1/2">
+          <input 
+          type="text" 
+          name="" 
+          id=""
+          className='' />
+        </div>
+      </div>
+     </nav>
+</>
+  )
+}
 
-export default NavBar;
+export default Navbar

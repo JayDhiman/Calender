@@ -1,116 +1,108 @@
 import React, { useState } from 'react';
-import { MdArrowBack, MdArrowForward, MdAdd } from 'react-icons/md';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import EventModal from './EventModel'
+import { Tooltip, IconButton } from '@mui/material';
+import { EventNote } from '@mui/icons-material';
+import { useGetEventsQuery } from '../Api/eventsApi';
 
-const Caleder = () => {
-    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const monthsOfYear = [
-      "January", "February", "March", "April", "May", "June", 
-      "July", "August", "September", "October", "November", "December"
-    ];
-    
-    const currentDate = new Date();
-    const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
-    const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
+const localizer = momentLocalizer(moment);
 
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+const CalendarComponent = () => {
+  const { data, isError, isLoading } = useGetEventsQuery();
+  const [showModal, setShowModal] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const events = Array.isArray(data?.data) ? data.data : [];
 
-    const isToday = (day) => {
-        return day === currentDate.getDate() && 
-               currentMonth === currentDate.getMonth() && 
-               currentYear === currentDate.getFullYear();
+  const handleEventClick = (event) => {
+    setCurrentEvent(event);
+    setShowModal(true);
+  };
+
+  const handleAddEvent = () => {
+    setCurrentEvent(null);
+    setShowModal(true);
+  };
+
+  const eventStyleGetter = (event) => {
+    let backgroundColor = '';
+    switch (event.category) {
+      case 'Work':
+        backgroundColor = 'bg-blue-500 hover:bg-blue-600';
+        break;
+      case 'Personal':
+        backgroundColor = 'bg-red-500 hover:bg-red-600';
+        break;
+      case 'Meeting':
+        backgroundColor = 'bg-green-500 hover:bg-green-600';
+        break;
+      case 'Others':
+        backgroundColor = 'bg-gray-500 hover:bg-gray-600';
+        break;
+      default:
+        backgroundColor = 'bg-indigo-500 hover:bg-indigo-600';
+        break;
+    }
+    return {
+      style: {
+        backgroundColor,
+        color: 'white',
+        borderRadius: '8px',
+        padding: '12px',
+        fontWeight: 'bold',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+        transition: 'background-color 0.3s ease-in-out, transform 0.2s',
+      },
     };
+  };
 
-    const handlePreviousMonth = () => {
-        if (currentMonth === 0) {
-            setCurrentMonth(11);
-            setCurrentYear(currentYear - 1);
-        } else {
-            setCurrentMonth(currentMonth - 1);
-        }
-    };
-
-    const handleNextMonth = () => {
-        if (currentMonth === 11) {
-            setCurrentMonth(0);
-            setCurrentYear(currentYear + 1);
-        } else {
-            setCurrentMonth(currentMonth + 1);
-        }
-    };
-
-    return (
-        <div className="max-w-lg mx-auto p-4 bg-white shadow-lg rounded-lg">
-            {/* Calendar Header */}
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-3xl font-bold text-gray-800">Calendar</h1>
-                <button 
-                    className="flex items-center px-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition duration-200"
-                >
-                    <MdAdd />
-                    <span className='text-sm'> Add </span>
-                </button>
-            </div>
-            
-            {/* Current Month and Year */}
-            <div className="flex justify-between items-center mb-4">
-                <div className="text-center flex items-center  gap-2 ">
-                    <h2 className="text-lg opacity-95font-semibold text-gray-700">{monthsOfYear[currentMonth]}</h2>
-                    <h2 className="text-md text-gray-500">{currentYear}</h2>
-                </div>
-                <div className="flex space-x-2">
-                    <button 
-                        className="p-2 rounded bg-gray-200 hover:bg-gray-300 transition duration-200"
-                        onClick={handlePreviousMonth}
-                    >
-                        <MdArrowBack className="text-gray-600" />
-                    </button>
-                    <button 
-                        className="p-2 rounded bg-gray-200 hover:bg-gray-300 transition duration-200"
-                        onClick={handleNextMonth}
-                    >
-                        <MdArrowForward className="text-gray-600" />
-                    </button>
-                </div>
-            </div>
-
-            {/* Days of the Week */}
-            <div className="grid grid-cols-7 gap-2 text-center font-semibold text-gray-700 text-sm">
-                {daysOfWeek.map((day) => (
-                    <div key={day} className="p-2 bg-gray-100 rounded-lg shadow">{day}</div>
-                ))}
-            </div>
-
-            {/* Days of the Month */}
-            <div className="grid grid-cols-7 gap-2 mt-2">
-                {/* Empty slots for alignment */}
-                {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-                    <div key={`empty-${index}`} className="h-10"></div>
-                ))}
-
-                {Array.from({ length: daysInMonth }).map((_, day) => {
-                    const dayNumber = day + 1;
-                    const currentDayOfWeek = (firstDayOfMonth + day) % 7; // 0=Sun, 1=Mon,... 
-
-                    return (
-                        <div 
-                            key={dayNumber}
-                            className={`h-16 flex items-center justify-center border border-gray-300 rounded-lg transition-transform transform hover:scale-105 
-                            ${isToday(dayNumber) ? 'bg-blue-300 font-bold' : 'hover:bg-blue-100 cursor-pointer'}
-                            ${currentDayOfWeek === 0 || currentDayOfWeek === 6 ? 'text-red-600' : 'text-gray-800'}`}
-                        >
-                            {dayNumber}
-                        </div>
-                    );
-                })}
-
-                {/* Empty slots for remaining days of the week */}
-                {Array.from({ length: (7 - (firstDayOfMonth + daysInMonth) % 7) % 7 }).map((_, index) => (
-                    <div key={`empty-end-${index}`} className="h-10"></div>
-                ))}
-            </div>
+  const renderEvent = (event) => (
+    <Tooltip title={event.title} placement="top">
+      <div className={`rbc-event p-4 rounded-lg shadow-md transform transition-transform duration-200 hover:scale-105 ${eventStyleGetter(event).style.backgroundColor}`}>
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-semibold text-white">{event.title}</span>
+          <IconButton className="text-white text-xs hover:bg-white hover:bg-opacity-20 rounded-full" onClick={() => handleEventClick(event)}>
+            <EventNote />
+          </IconButton>
         </div>
-    );
+      </div>
+    </Tooltip>
+  );
+
+  if (isLoading) return <div className="text-center text-lg">Loading...</div>;
+
+  if (isError) {
+    if (isError.status === 401) {
+      return <div className="text-center text-lg">Please log in to access your events.</div>;
+    }
+    return <div className="text-center text-lg">Error loading events. Please try again later.</div>;
+  }
+
+  return (
+    <div className="calendar-container mx-auto mt-8 p-6 max-w-full rounded-lg shadow-lg bg-white">
+      <h1 className="text-2xl font-bold text-center mb-4">Event Calendar</h1>
+      <button
+        onClick={handleAddEvent}
+        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
+      >
+        Add Event
+      </button>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="startTime"
+        endAccessor="endTime"
+        onSelectEvent={handleEventClick}
+        style={{ height: 600 }}
+        eventPropGetter={eventStyleGetter}
+        components={{
+          event: renderEvent,
+        }}
+      />
+      {showModal && <EventModal event={currentEvent} closeModal={() => setShowModal(false)} />}
+    </div>
+  );
 };
 
-export default Caleder;
+export default CalendarComponent;

@@ -1,8 +1,20 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import Cookies from 'js-cookie';
 
 const userApi = createApi({
   reducerPath: 'userApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8000/api/v1/auth' }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'http://localhost:8000/api/v1/auth',
+    credentials: 'include',
+    prepareHeaders: (headers) => {
+      const token = Cookies.get('token');
+     
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (userData) => ({
@@ -18,25 +30,24 @@ const userApi = createApi({
         body: userData,
       }),
     }),
+    logout: builder.mutation({
+      query: () => ({
+        url: '/logout',
+        method: 'GET',
+      }),
+    }),
     getUserDetails: builder.query({
       query: () => '/me',
-    }),
-    updateUser: builder.mutation({
-      query: (userData) => ({
-        url: '/me/update',
-        method: 'PUT',
-        body: userData,
-      }),
+      method: 'GET',
     }),
   }),
 });
 
-// Export hooks for usage in functional components
 export const {
   useRegisterMutation,
   useLoginMutation,
+  useLogoutMutation,
   useGetUserDetailsQuery,
-  useUpdateUserMutation,
 } = userApi;
 
 export default userApi;

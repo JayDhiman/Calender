@@ -6,16 +6,46 @@ import register from "../assets/register.png"; // Your image
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [loginUser, { isLoading, error }] = useLoginMutation();
   const navigate = useNavigate();
 
+  const validateForm = () => {
+    let isValid = true;
+
+    // Email validation (basic check)
+    if (!email) {
+      setEmailError("Email is required");
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError("Please enter a valid email address");
+      isValid = false;
+    } else {
+      setEmailError("");
+    }
+
+    // Password validation (check if password is provided)
+    if (!password) {
+      setPasswordError("Password is required");
+      isValid = false;
+    } else {
+      setPasswordError("");
+    }
+
+    return isValid;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     try {
       const userData = await loginUser({ email, password }).unwrap();
       if (userData && userData.success) {
         document.cookie = `token=${userData.token}; path=/`;
-        navigate("/main");
+        navigate("/dashboard");
       }
     } catch (err) {
       console.error("Login Error:", err);
@@ -61,6 +91,7 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            {emailError && <p className="text-red-500 text-xs mt-1">{emailError}</p>}
           </div>
           <div className="mt-4">
             <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">
@@ -73,6 +104,7 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            {passwordError && <p className="text-red-500 text-xs mt-1">{passwordError}</p>}
           </div>
 
           {/* Submit Button */}
@@ -80,8 +112,9 @@ const Login = () => {
             <button
               type="submit"
               className="w-full px-4 py-2 text-sm font-semibold text-white bg-gray-800 rounded-lg hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
+              disabled={isLoading}
             >
-              Login
+              {isLoading ? "Logging in..." : "Login"}
             </button>
           </div>
 

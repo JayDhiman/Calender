@@ -10,7 +10,7 @@ import  {
 
 const router = express.Router();
 
-// Protected routes require authentication middleware (protect)
+
 router.route('/')
   .post(protect, createEvent)      // Create a new event
   .get(protect, getEvents);         // Get all events for the user

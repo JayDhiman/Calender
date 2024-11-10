@@ -7,11 +7,37 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [registerUser, { isLoading, error }] = useRegisterMutation();
   const navigate = useNavigate();
 
+  // Email validation regex
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
+  // Password validation (min 6 characters)
+  const validatePassword = (password) => password.length >= 6;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validation
+    if (!name) {
+      setErrorMessage("Name is required");
+      return;
+    }
+    if (!validateEmail(email)) {
+      setErrorMessage("Please enter a valid email address");
+      return;
+    }
+    if (!validatePassword(password)) {
+      setErrorMessage("Password must be at least 6 characters long");
+      return;
+    }
+
+    setErrorMessage(""); // Clear any previous error messages
 
     // Log the name, email, and password
     console.log("Signup Data:", { name, email, password });
@@ -23,6 +49,7 @@ const Signup = () => {
       navigate("/login");
     } catch (err) {
       console.error("Signup Error:", error || err);
+      setErrorMessage("Signup failed, please try again later.");
     }
   };
 
@@ -46,7 +73,7 @@ const Signup = () => {
               src="https://merakiui.com/images/logo.svg"
               alt="Logo"
             />
-          </Link>{" "}
+          </Link>
         </div>
         <p className="mt-4 text-xl font-semibold text-center text-gray-600 dark:text-gray-200">
           Create an account!
@@ -104,6 +131,9 @@ const Signup = () => {
             </button>
           </div>
 
+          {/* Error Message */}
+          {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
+
           {error && <p className="text-red-500 mt-2">{error.message}</p>}
         </form>
 
@@ -112,7 +142,7 @@ const Signup = () => {
             Already have an account?
           </h3>
           <Link to={"/login"}>
-            <button className="text-sky-300 bg-opacity-40 ">Login</button>
+            <button className="text-sky-300 bg-opacity-40">Login</button>
           </Link>
         </div>
       </div>

@@ -1,50 +1,63 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } from '@mui/material';
+import { useCreateEventMutation, useUpdateEventMutation } from '../Api/eventsApi.js'; // Import RTK Query hooks
 
-const EventModal = ({ event, onClose, onUpdate }) => {
-  if (!event) return null; // Don't render if no event is selected
+const EventModal = ({ event, closeModal }) => {
+  const [title, setTitle] = useState(event ? event.title : '');
+  const [description, setDescription] = useState(event ? event.description : '');
+  const [startTime, setStartTime] = useState(event ? event.startTime : '');
+  const [endTime, setEndTime] = useState(event ? event.endTime : '');
+  
+  const [createEvent] = useCreateEventMutation();
+  const [updateEvent] = useUpdateEventMutation();
 
-  const handleUpdate = () => {
-    // Implement the update logic here
-    // Call onUpdate with the updated event object
-    const updatedEvent = { ...event, title: 'Updated Event Title' }; // Example update
-    onUpdate(updatedEvent);
-    onClose(); // Close the modal after updating
+  const handleSave = async () => {
+    if (event) {
+      // Update event
+      await updateEvent({ id: event._id, title, description, startTime, endTime });
+    } else {
+      // Create new event
+      await createEvent({ title, description, startTime, endTime });
+    }
+    closeModal();
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-4 rounded-lg shadow-lg">
-        <h3 className="text-xl font-semibold">{event.title}</h3>
-        <p><strong>Date:</strong> {event.dateTime.toLocaleDateString()}</p>
-        <p><strong>Time:</strong> {event.dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-        <p><strong>Description:</strong> {event.description}</p>
-        <p><strong>Location:</strong> {event.location}</p>
-        <div className="flex justify-end space-x-2 mt-4">
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={handleUpdate}
-          >
-            Update
-          </button>
-          <button
-            className="bg-red-500 text-white px-4 py-2 rounded"
-            onClick={() => {
-              // Implement delete logic here, for example:
-              // handleDelete(event.id);
-              onClose(); // Close the modal after deletion
-            }}
-          >
-            Delete
-          </button>
-          <button
-            className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
-            onClick={onClose}
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
+    <Dialog open={true} onClose={closeModal}>
+      <DialogTitle>{event ? 'Edit Event' : 'Create Event'}</DialogTitle>
+      <DialogContent>
+        <TextField
+          label="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          fullWidth
+        />
+        <TextField
+          label="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          fullWidth
+        />
+        <TextField
+          type="datetime-local"
+          label="Start Time"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+          fullWidth
+        />
+        <TextField
+          type="datetime-local"
+          label="End Time"
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
+          fullWidth
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={closeModal}>Cancel</Button>
+        <Button onClick={handleSave}>Save</Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
