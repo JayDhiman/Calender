@@ -1,7 +1,7 @@
 // src/services/cronService.js
 import cron from 'node-cron';
-import sendMail from '../utilities/sendMail.js';
 import { Event } from '../models/event.model.js';
+import sendMail from './emailService.js';
 
 
 const startCronJobs = () => {

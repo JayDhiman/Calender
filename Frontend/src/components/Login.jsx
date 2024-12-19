@@ -11,6 +11,8 @@ const Login = () => {
   const [loginUser, { isLoading, error }] = useLoginMutation();
   const navigate = useNavigate();
 
+console.log(loginUser, '---login----')
+
   const validateForm = () => {
     let isValid = true;
 

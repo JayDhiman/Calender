@@ -1,8 +1,9 @@
 import { Event } from "../models/event.model.js";
+import sendMail from "../service/emailService.js";
 import { ApiResponse } from "../utilities/ApiResponse.js";
 import { ApiError } from "../utilities/apiError.js";
 import { asyncHandler } from "../utilities/asyncHandler.js";
-import sendMail from "../utilities/sendMail.js";
+
 
 
 // Helper function to schedule email reminder

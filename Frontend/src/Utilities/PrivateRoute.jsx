@@ -1,15 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate,Outlet } from 'react-router-dom'
+
 
 
 const PrivateRoute = ({token}) => {
 const navigate = useNavigate()
  
-if(!token)
-{
-  return navigate('/login')
-}
-
+useEffect(() => {
+  if (!token) {
+    navigate('/login');
+  }
+}, [navigate]); 
 return <Outlet/>
 
 

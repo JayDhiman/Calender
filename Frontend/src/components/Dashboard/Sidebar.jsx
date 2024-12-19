@@ -10,7 +10,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useGetUserDetailsQuery, useLogoutMutation } from '../../Api/userApi';
 
 
-const Sidebar = () => {
+const Sidebar = ({toggleSidebar}) => {
   const location = useLocation(); 
   const [activeTab, setActiveTab] = useState('');
   const navigate = useNavigate()
@@ -43,19 +43,19 @@ const Sidebar = () => {
     { 
       icon: <DashboardIcon />, 
       name: 'Dashboard', 
-      key: 'dashboard',
+      key: ' dashboard',
       path: '/dashboard'
     },
     { 
       icon: <CalendarMonth />, 
       name: 'Calendar', 
-      key: ' dashboard/calendar',
+      key: ' calendar',
       path: '/calendar'
     },
     { 
       icon: <EventNote />, 
       name: 'Events', 
-      key: 'dashboard/events',
+      key: 'event',
       path: '/event' 
     },
     
@@ -69,7 +69,7 @@ const Sidebar = () => {
 
 
   return (
-    <div className="w-72 bg-gray-900 text-white h-screen flex flex-col">
+    <div className={` ${toggleSidebar ? 'w-44':'w-[40px]'} bg-gray-900 text-white h-screen flex flex-col`}>
       <div className="p-6 border-b border-gray-700">
         <h1 className="text-2xl font-bold">Smart Calendar</h1>
       </div>
@@ -77,12 +77,12 @@ const Sidebar = () => {
       <nav className="flex-grow p-4">
         {menuItems.map((item) => (
           <Link
-            to={item.path}  // Using Link for navigation
+            to={item.path}  
             key={item.key}
             className={`
               flex items-center p-3 rounded-lg cursor-pointer mb-2
               ${activeTab === item.key 
-                ? 'bg-blue-600 text-white'  // Active tab styling
+                ? 'bg-blue-600 text-white'  
                 : 'hover:bg-gray-700'
               }
             `}
@@ -99,7 +99,7 @@ const Sidebar = () => {
             src= {profileImage}
             alt="Profile"
             className="w-12 h-12 rounded-full mr-4"
-          />: <div className=' border-t  w-10 h-10  text-center p-1 text-xl font-semibold bg-white text-black rounded-full mr-3 ml-3 '>{profileName.slice(0,1)}</div>}
+          />: <div className=' border-t  w-10 h-10  text-center p-1 text-xl font-semibold bg-white text-black rounded-full mr-3 ml-3 '>{profileName?.slice(0,1)}</div>}
           <div>
             <h3 className="font-semibold">{profileName}</h3>
 
