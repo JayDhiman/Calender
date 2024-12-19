@@ -1,9 +1,7 @@
-<<<<<<< HEAD
 import Event from "../models/event.model.js";
 import { asyncHandler } from "../utilities/asyncHandler.js";
 import { ApiResponse } from "../utilities/ApiResponse.js";
 import { ApiError } from "../utilities/apiError.js";
-=======
 import { Event } from "../models/event.model.js";
 import sendMail from "../service/emailService.js";
 import { ApiResponse } from "../utilities/ApiResponse.js";
@@ -29,7 +27,6 @@ const scheduleReminder = async (event) => {
         }
     }
 };
->>>>>>> 7505bf8 (user controller updated)
 
 // Create an Event
 export const createEvent = asyncHandler(async (req, res, next) => {

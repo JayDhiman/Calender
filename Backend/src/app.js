@@ -8,15 +8,12 @@ import eventRoutes from "./routes/events.routes.js"
 const app = express()
 
 //middleware
-<<<<<<< HEAD
 app.use(cors())  // we can set the options here
-=======
 app.use(cors({
   origin: process.env.CORS_ORIGIN,
   credentials: true
 }))
     // we can set the options here
->>>>>>> 7505bf8 (user controller updated)
 app.use(cookieParser())
 app.use(express.json({
     limit:"16kb"

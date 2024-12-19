@@ -102,16 +102,14 @@ const generateAccessAndRefereshTokens = async (userId) => {
 
   const isPasswordCorrect = await user.isPasswordCorrect(password);
 
-<<<<<<< HEAD
 // Get User details
-export const getUserDetails = asyncHandler(async (req, res, next) => {
+ const getUserDetails = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.user.id);
     res.status(200).json({
         success: true,
         user,
     });
 });
-=======
   if (!isPasswordCorrect) {
     return next(new ApiError(401, "Invalid user credentials"));
   }
@@ -158,7 +156,6 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
             new: true
         }
      )
->>>>>>> 7505bf8 (user controller updated)
 
      const options = {
       httpOnly: true,
