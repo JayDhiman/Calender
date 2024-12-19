@@ -1,29 +1,26 @@
-import express from 'express';
-import {
-    registerUser,
-    loginUser,
-    logoutUser,
-    getUserDetails,
-    updateUserProfile,
-} from '../controller/user.controller.js';
+import { Router } from "express";;
+import { refreshAccessToken ,registerUser,loginUser,logoutUser, getUserDetails, changeCurrentPassword, forgetPassword, resetPassword, } from '../controller/user.controller.js';
+import { verifyJWT } from "../middleware/auth.middleware.js";
 
-import { protect } from '../middleware/auth.middleware.js';
+const router = Router();
 
-const router = express.Router();
 
-// Register a new user
+
 router.post('/register', registerUser);
+router.route("/login").post(loginUser)
 
-// Login user
-router.post('/login', loginUser);
+//secured routes
+router.route("/logout").post(verifyJWT, logoutUser)
+router.route("/refresh-token").post(refreshAccessToken)
+router.route("/me").get(verifyJWT,getUserDetails)
+router.route("/change-password").post(verifyJWT,changeCurrentPassword)
 
-// Logout user
-router.get('/logout', logoutUser);
 
-// Get user details (protected route)
-router.get('/me', protect, getUserDetails);
+router.route("/forget-password").post(forgetPassword)
+router.route("/reset-password").post(resetPassword)
 
-// Update user profile (protected route)
-router.put('/me/update', protect, updateUserProfile);
+
+
+
 
 export default router;
