@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } from '@mui/material';
-import { useCreateEventMutation, useUpdateEventMutation } from '../Api/eventsApi.js'; // Import RTK Query hooks
+// import { useCreateEventMutation, useUpdateEventMutation } from '../Api/eventsApi.js'; // Import RTK Query hooks
 
 const EventModal = ({ event, closeModal }) => {
   const [title, setTitle] = useState(event ? event.title : '');

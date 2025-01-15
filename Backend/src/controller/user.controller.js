@@ -82,18 +82,18 @@ const generateAccessAndRefereshTokens = async (userId) => {
   // genrate access and refresh token
   //send cookies
 
-  const { username, email, password } = req.body;
+  const {  email, password } = req.body;
 
   // Check if email and password are provided
-  if (!email || !password || !username) {
+  if (!email || !password ) {
     return next(
-      new ApiError(400, "Please provide username, email and password")
+      new ApiError(400, "Please provide  email and password")
     );
   }
 
   // fetch user
   const user = await User.findOne({
-    $or: [{ username }, { email }],
+    $or: [ { email }],
   });
 
   if (!user) {
@@ -114,20 +114,21 @@ const generateAccessAndRefereshTokens = async (userId) => {
    const options = {
     secure: process.env.NODE_ENV === 'production', // Set to true in production
     httpOnly: true, // Prevents access to cookie from JavaScript
-    sameSite: 'Strict', // Helps prevent CSRF attacks
+    sameSite: 'Strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000 // Helps prevent CSRF attacks
 
   };
 
 
  return res
  .status(200)
- .cookie("accessToken", accessToken, options )
+ .cookie("accessToken",accessToken,options)
  .cookie("refreshToken", refreshToken, options )
  .json(
     new ApiResponse(
         200, 
         {
-            user: loggedInUser, accessToken, refreshToken
+            user: loggedInUser
         },
         "User logged In Successfully"
     )
@@ -150,21 +151,28 @@ const generateAccessAndRefereshTokens = async (userId) => {
      )
 
      const options = {
-      httpOnly: true,
-      secure: true
-  }
+      secure: process.env.NODE_ENV === 'production', // Set to true in production
+      httpOnly: true, // Prevents access to cookie from JavaScript
+      sameSite: 'Strict',
+     
+  
+    };
      return res
      .status(200)
-     .clearCookie("accessToken", options)
+     .clearCookie("accessToken",options)
      .clearCookie("refreshToken", options)
      .json(new ApiResponse(200, {}, "User logged Out"))
-
+     
     });
 
 
+
     const refreshAccessToken = asyncHandler(async (req, res) => {
+      console.log('Refreshing access token...'); 
         const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
     
+        console.log("Received refresh token request:", incomingRefreshToken); 
+
         if (!incomingRefreshToken) {
             throw new ApiError(401, "unauthorized request")
         }
@@ -185,25 +193,28 @@ const generateAccessAndRefereshTokens = async (userId) => {
                 throw new ApiError(401, "Refresh token is expired or used")
                 
             }
+            const {accessToken, refreshToken:newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
         
             const options = {
-                httpOnly: true,
-                secure: true
-            }
+              secure: process.env.NODE_ENV === 'production', // Set to true in production
+              httpOnly: true, // Prevents access to cookie from JavaScript
+              sameSite: 'Strict', // Helps prevent CSRF attacks
+          
+            };
         
-            const {accessToken, refreshToken:newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
         
             return res
             .status(200)
-            .cookie("accessToken", accessToken, options)
+            .cookie("accessToken",accessToken,options)
             .cookie("refreshToken", newRefreshToken, options)
             .json(
-                new ApiResponse(
-                    200, 
-                    {accessToken, refreshToken: newRefreshToken},
-                    "Access token refreshed"
+              new ApiResponse(
+                200, 
+                {accessToken, refreshToken: newRefreshToken},
+                "Access token refreshed"
                 )
-            )
+                )
+            
         } catch (error) {
             throw new ApiError(401, error?.message || "Invalid refresh token")
         }
@@ -214,7 +225,7 @@ const generateAccessAndRefereshTokens = async (userId) => {
 
     // ******************** UserDetails****************
 
-    const getUserDetails =  asyncHandler(async (req,res)=>{
+  const getUserDetails =  asyncHandler(async (req,res)=>{
       
       const user = await User.findById(req.user._id).select("-password -refreshToken")
 
@@ -410,3 +421,7 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
         resetPassword
         
     }
+
+
+
+   

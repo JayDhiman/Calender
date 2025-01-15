@@ -1,15 +1,22 @@
 import React, { useState } from "react";
-import { useRegisterMutation } from "../Api/userApi"; // Adjust the import path as needed
 import { useNavigate, Link } from "react-router-dom";
-import register from "../assets/register.png"; // Your image
+import { useDispatch } from "react-redux";
+import { useRegisterMutation } from "../Service/Auth/authApiHelpers"; // Using RTK Query
+ // Password strength meter library
+ import register from "../assets/register.png"
 
-const Signup = () => {
-  const [name, setName] = useState("");
+ const Signup = () => {
+  // State for form fields
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [registerUser, { isLoading, error }] = useRegisterMutation();
+  const [error, setError] = useState(""); // Local error state
+
   const navigate = useNavigate();
+
+  // RTK Query hook for user registration
+  const [registerUser, { isLoading }] = useRegisterMutation();
 
   // Email validation regex
   const validateEmail = (email) => {
@@ -22,34 +29,35 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
-    if (!name) {
-      setErrorMessage("Name is required");
+    if (!fullName) {
+      setError("Full name is required");
       return;
     }
     if (!validateEmail(email)) {
-      setErrorMessage("Please enter a valid email address");
+      setError("Please enter a valid email address");
+      return;
+    }
+    if (!username) {
+      setError("Username is required");
       return;
     }
     if (!validatePassword(password)) {
-      setErrorMessage("Password must be at least 6 characters long");
+      setError("Password must be at least 6 characters long");
       return;
     }
 
-    setErrorMessage(""); // Clear any previous error messages
-
-    // Log the name, email, and password
-    console.log("Signup Data:", { name, email, password });
-
-    // Call the register mutation
     try {
-      const userData = await registerUser({ name, email, password }).unwrap();
+      // Trigger register mutation via RTK Query
+      const userData = await registerUser({ fullName, email, username, password }).unwrap();
       console.log("User Registered:", userData);
+
+      // Navigate to login page after successful registration
       navigate("/login");
     } catch (err) {
-      console.error("Signup Error:", error || err);
-      setErrorMessage("Signup failed, please try again later.");
+      console.error("Signup Error:", err);
+      setError(err?.message || "Signup failed, please try again later.");
     }
   };
 
@@ -83,13 +91,13 @@ const Signup = () => {
         <form onSubmit={handleSubmit} className="mt-6">
           <div>
             <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">
-              Name
+              Full Name
             </label>
             <input
               type="text"
               className="block w-full px-4 py-2 text-gray-700 border rounded-lg bg-gray-600 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:ring focus:ring-blue-300 focus:outline-none"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               required
             />
           </div>
@@ -107,18 +115,31 @@ const Signup = () => {
           </div>
           <div className="mt-4">
             <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">
-              Password
+              Username
             </label>
             <input
-              type="password"
+              type="text"
               className="block w-full px-4 py-2 text-gray-700 border rounded-lg bg-gray-600 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:ring focus:ring-blue-300 focus:outline-none"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
+          <div className="mt-4">
+            <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type="password"
+                className="block w-full px-4 py-2 text-gray-700 border rounded-lg bg-gray-600 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:ring focus:ring-blue-300 focus:outline-none"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+          </div>
 
-          {/* Submit Button */}
           <div className="mt-6">
             <button
               type="submit"
@@ -132,9 +153,7 @@ const Signup = () => {
           </div>
 
           {/* Error Message */}
-          {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
-
-          {error && <p className="text-red-500 mt-2">{error.message}</p>}
+          {error && <p className="text-red-500 mt-2">{error}</p>}
         </form>
 
         <div className="w-full mx-auto text-center my-3 flex items-center justify-center gap-2">
@@ -142,7 +161,7 @@ const Signup = () => {
             Already have an account?
           </h3>
           <Link to={"/login"}>
-            <button className="text-sky-300 bg-opacity-40">Login</button>
+            <button className="text-sky-300 bg-opacity-40 ">Login</button>
           </Link>
         </div>
       </div>

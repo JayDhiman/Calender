@@ -5,7 +5,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import EventModal from './EventModel'
 import { Tooltip, IconButton } from '@mui/material';
 import { EventNote } from '@mui/icons-material';
-import { useGetEventsQuery } from '../Api/eventsApi';
+// import { useGetEventsQuery } from '../Api/eventsApi';
 
 const localizer = momentLocalizer(moment);
 
