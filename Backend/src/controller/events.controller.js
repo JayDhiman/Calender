@@ -38,7 +38,7 @@ export const createEvent = asyncHandler(async (req, res, next) => {
         return next(new ApiError(400, 'Reminder Time must be a positive number or zero.'));
     }
 
-    const event = new Event({
+    const event = new Event.create({
         title,
         description,
         startTime,

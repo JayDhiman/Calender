@@ -34,4 +34,33 @@ const eventSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
+// Custom validation to ensure end time is after start time
+eventSchema.path('endTime').validate(function(value) {
+    return value > this.startTime;
+}, 'End time must be after start time');
+
+// Pre-save hook to handle reminderTime calculation (if necessary)
+eventSchema.pre('save', function(next) {
+    if (this.reminderTime && this.startTime) {
+        // Reminder time is already in minutes, but we can calculate the reminder date
+        this.reminderTime = this.startTime - this.reminderTime * 60000; // in milliseconds
+    }
+    next();
+});
+
+// Indexing for performance
+eventSchema.index({ user: 1, startTime: 1 }); // Index for user and startTime
+
+// Instance method to check if the event overlaps with another event (optional)
+eventSchema.methods.isOverlapping = async function() {
+    const existingEvent = await Event.findOne({
+        user: this.user,
+        $or: [
+            { startTime: { $lt: this.endTime }, endTime: { $gt: this.startTime } }, // Check for overlap
+        ],
+    });
+
+    return existingEvent ? true : false;
+};
+
 export const Event = mongoose.model('Event', eventSchema);
