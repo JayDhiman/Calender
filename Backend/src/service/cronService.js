@@ -1,35 +1,52 @@
-// src/services/cronService.js
+import logger from "../utilities/logger.js"
 import cron from 'node-cron';
-import { Event } from '../models/event.model.js';
 import sendMail from './emailService.js';
 
 
-const startCronJobs = () => {
-  cron.schedule('*/5 * * * *', async () => {
-    console.log("Running scheduled task for reminders...");
+const cronJobs = {}; // Object to track active cron jobs by event ID
 
-    try {
-      const currentTime = new Date();
-      const futureTime = new Date(currentTime.getTime() + 30 * 60000); // 30 minutes from now
+// Schedule a reminder for an event
+export const scheduleReminder = async (event) => {
+    if (event.reminderTime > 0) {
+        const reminderDate = new Date(event.startTime);
+        reminderDate.setMinutes(reminderDate.getMinutes() - event.reminderTime);
 
-      const events = await Event.find({
-        startTime: { $lte: futureTime, $gte: currentTime },
-        reminderTime: { $gt: 0 },
-      }).populate('user', 'email');
+        const cronExpression = `${reminderDate.getMinutes()} ${reminderDate.getHours()} ${reminderDate.getDate()} ${reminderDate.getMonth() + 1} *`;
 
-      for (const event of events) {
-        await sendMail({
-          email: event.user.email,
-          subject: 'Upcoming Event Reminder',
-          message: `This is a reminder for your upcoming event "${event.title}" starting at ${event.startTime}.`,
+        // Cancel any existing job for this event
+        if (cronJobs[event._id]) {
+            cronJobs[event._id].stop();
+            delete cronJobs[event._id];
+            logger.info(`Cancelled previous cron job for event "${event.title}"`);
+        }
+
+        // Schedule the new cron job
+        const job = cron.schedule(cronExpression, async () => {
+            try {
+                await sendMail({
+                    to: event.user.email,
+                    subject: `Reminder: ${event.title}`,
+                    text: `This is a reminder for your event "${event.title}" scheduled at ${event.startTime}.`,
+                });
+
+                logger.info(`Reminder sent for event "${event.title}" at ${reminderDate}`);
+            } catch (error) {
+                logger.error(`Failed to send reminder for event "${event.title}": ${error.message}`);
+            }
         });
-      }
 
-      console.log("Reminders sent successfully.");
-    } catch (error) {
-      console.error("Error sending reminders:", error);
+        // Store the cron job for later reference
+        cronJobs[event._id] = job;
+        logger.info(`Scheduled reminder for event "${event.title}" at ${reminderDate}`);
     }
-  });
 };
 
-export default startCronJobs;
+// Cancel the cron job for a specific event
+export const cancelCronJob = (eventId) => {
+    const job = cronJobs[eventId];
+    if (job) {
+        job.stop();
+        delete cronJobs[eventId];
+        logger.info(`Cron job for event with ID "${eventId}" has been cancelled.`);
+    }
+};

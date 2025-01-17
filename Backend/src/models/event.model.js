@@ -1,60 +1,82 @@
-import mongoose, { Schema } from "mongoose";
+import cron from "node-cron"
+import mongoose from 'mongoose';
+import sendMail from '../service/emailService.js';
+ // Assuming you use this for sending email notifications
 
-const eventSchema = new Schema({
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
+const eventSchema = new mongoose.Schema({
     title: {
-      type: String,
-      required: [true, 'Please enter an event title'],
+        type: String,
+        required: [true, 'Please provide a title'],
     },
     description: {
-      type: String,
-      default: '',
+        type: String,
+        required: [true, 'Please provide a description'],
     },
-    dateTime: {
-      type: Date,
-      required: [true, 'Please enter the date and time of the event'],
+    startTime: {
+        type: Date,
+        required: [true, 'Please provide the start time'],
     },
-    duration: {
-      type: Number,
-      default: 60, // in minutes
+    endTime: {
+        type: Date,
+        required: [true, 'Please provide the end time'],
     },
-    location: {
-      type: String,
-      default: '',
-    },
-    participants: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    }],
     reminderTime: {
-      type: Date, // Set a specific time for reminder
+        type: Number, // In minutes before the event (e.g., 30 minutes)
+        default: 0,
     },
-    repeat: {
-      type: String,
-      enum: ['none', 'daily', 'weekly', 'monthly', 'yearly'],
-      default: 'none',
+    category: {
+        type: String,
+        enum: ['Work', 'Personal', 'Meeting', 'Others'],
+        default: 'Others',
     },
-    colorCode: {
-      type: String,
-      default: '#0000FF', // Default color (blue)
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
     },
-    isAllDay: {
-      type: Boolean,
-      default: false,
-    },
-    status: {
-      type: String,
-      enum: ['scheduled', 'completed', 'cancelled'],
-      default: 'scheduled',
-    },
-  }, {
-    timestamps: true,
-  });
+}, { timestamps: true });
 
-const Event = mongoose.model('Event',eventSchema)
+// Custom validation to ensure end time is after start time
+eventSchema.pre('save', function(next) {
+    if (this.startTime && this.endTime && this.endTime <= this.startTime) {
+        return next(new Error('End time must be after start time.'));
+    }
+    next();
+});
 
-export default Event;
+// Custom validation for update (using 'findOneAndUpdate')
+eventSchema.pre('findOneAndUpdate', function(next) {
+    const update = this.getUpdate();
+    if (update.startTime && update.endTime && update.endTime <= update.startTime) {
+        return next(new Error('End time must be after start time.'));
+    }
+    next();
+});
+
+// Post-save hook to schedule email reminders
+eventSchema.post('save', async function(doc) {
+    if (doc.reminderTime > 0) {
+        const reminderDate = new Date(doc.startTime);
+        reminderDate.setMinutes(reminderDate.getMinutes() - doc.reminderTime);  // Calculate the reminder time
+
+        // Generate the cron expression for reminderDate
+        const cronExpression = `${reminderDate.getMinutes()} ${reminderDate.getHours()} ${reminderDate.getDate()} ${reminderDate.getMonth() + 1} *`;
+
+        // Schedule the cron job to send the reminder
+        cron.schedule(cronExpression, async () => {
+            try {
+                await sendMail({
+                    to: doc.user.email,
+                    subject: `Reminder: ${doc.title}`,
+                    text: `This is a reminder for your event "${doc.title}" scheduled at ${doc.startTime}.`,
+                });
+            } catch (error) {
+                console.error(`Failed to send reminder for event "${doc.title}": ${error.message}`);
+            }
+        });
+    }
+});
+
+eventSchema.index({ user: 1, startTime: 1 }); // Index for user and startTime
+
+export const Event = mongoose.model('Event', eventSchema);

@@ -8,8 +8,8 @@ const sendMail = async (options) => {
   // Generate a transporter using SMTP with secure options
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST, 
-    port: process.env.EMAIL_PORT, 
-    secure: true, 
+    port: process.env.EMAIL_PORT , 
+    secure: false, 
     auth: {
       user: process.env.EMAIL_USER, 
       pass: process.env.EMAIL_PASS, 
@@ -27,7 +27,7 @@ const sendMail = async (options) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully');
+    console.log(`Email sent successfully ${options.email}`);
 } catch (error) {
     console.error('Error sending email:', error);
     throw new Error('Email could not be sent');
