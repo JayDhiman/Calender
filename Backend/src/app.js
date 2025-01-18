@@ -10,15 +10,7 @@ import errorHandler from "./middleware/errorHandler.middleware.js"
 const app = express()
 
 //middleware
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  maxAge: 600, // Cache preflight response for 10 minutes
-}));
-
-    // we can set the options here
+app.use(cors())  // we can set the options here
 app.use(cookieParser())
 app.use(express.json({
     limit:"16kb"

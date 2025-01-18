@@ -2,27 +2,6 @@ import { Event } from "../models/event.model.js";
 import sendMail from "../service/emailService.js";
 import { ApiResponse } from "../utilities/ApiResponse.js";
 import { ApiError } from "../utilities/apiError.js";
-import { asyncHandler } from "../utilities/asyncHandler.js";
-
-
-
-// Helper function to schedule email reminder
-const scheduleReminder = async (event) => {
-    if (event.reminderTime > 0) {
-        const reminderDate = new Date(event.startTime);
-        reminderDate.setMinutes(reminderDate.getMinutes() - event.reminderTime);
-
-        // Check if the reminder time has already passed
-        if (new Date() >= reminderDate) {
-            // Send email immediately if reminder time has passed
-            await sendMail({
-                to: event.user.email, // Assumes user's email is accessible in the `user` field
-                subject: `Reminder: ${event.title}`,
-                text: `This is a reminder for your event "${event.title}" scheduled at ${event.startTime}.`,
-            });
-        }
-    }
-};
 
 // Create an Event
 export const createEvent = asyncHandler(async (req, res, next) => {
