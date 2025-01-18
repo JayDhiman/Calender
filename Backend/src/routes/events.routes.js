@@ -11,7 +11,7 @@ import { verifyJWT } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-// Protected routes require authentication middleware (protect)
+
 router.route('/')
   .post(verifyJWT, createEvent)      // Create a new event
   .get(verifyJWT, getEvents);         // Get all events for the user
