@@ -1,5 +1,7 @@
-// models/event.model.js
+import cron from "node-cron"
 import mongoose from 'mongoose';
+import sendMail from '../service/emailService.js';
+ // Assuming you use this for sending email notifications
 
 const eventSchema = new mongoose.Schema({
     title: {
@@ -24,43 +26,57 @@ const eventSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ['Work', 'Personal', 'Meeting', 'Others'], // Example categories
+        enum: ['Work', 'Personal', 'Meeting', 'Others'],
         default: 'Others',
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Assuming each event is tied to a user
+        ref: 'User',
         required: true,
     },
 }, { timestamps: true });
 
 // Custom validation to ensure end time is after start time
-eventSchema.path('endTime').validate(function(value) {
-    return value > this.startTime;
-}, 'End time must be after start time');
-
-// Pre-save hook to handle reminderTime calculation (if necessary)
 eventSchema.pre('save', function(next) {
-    if (this.reminderTime && this.startTime) {
-        // Reminder time is already in minutes, but we can calculate the reminder date
-        this.reminderTime = this.startTime - this.reminderTime * 60000; // in milliseconds
+    if (this.startTime && this.endTime && this.endTime <= this.startTime) {
+        return next(new Error('End time must be after start time.'));
     }
     next();
 });
 
-// Indexing for performance
+// Custom validation for update (using 'findOneAndUpdate')
+eventSchema.pre('findOneAndUpdate', function(next) {
+    const update = this.getUpdate();
+    if (update.startTime && update.endTime && update.endTime <= update.startTime) {
+        return next(new Error('End time must be after start time.'));
+    }
+    next();
+});
+
+// Post-save hook to schedule email reminders
+eventSchema.post('save', async function(doc) {
+    if (doc.reminderTime > 0) {
+        const reminderDate = new Date(doc.startTime);
+        reminderDate.setMinutes(reminderDate.getMinutes() - doc.reminderTime);  // Calculate the reminder time
+
+        // Generate the cron expression for reminderDate
+        const cronExpression = `${reminderDate.getMinutes()} ${reminderDate.getHours()} ${reminderDate.getDate()} ${reminderDate.getMonth() + 1} *`;
+
+        // Schedule the cron job to send the reminder
+        cron.schedule(cronExpression, async () => {
+            try {
+                await sendMail({
+                    to: doc.user.email,
+                    subject: `Reminder: ${doc.title}`,
+                    text: `This is a reminder for your event "${doc.title}" scheduled at ${doc.startTime}.`,
+                });
+            } catch (error) {
+                console.error(`Failed to send reminder for event "${doc.title}": ${error.message}`);
+            }
+        });
+    }
+});
+
 eventSchema.index({ user: 1, startTime: 1 }); // Index for user and startTime
-
-// Instance method to check if the event overlaps with another event (optional)
-eventSchema.methods.isOverlapping = async function() {
-    const existingEvent = await Event.findOne({
-        user: this.user,
-        $or: [
-            { startTime: { $lt: this.endTime }, endTime: { $gt: this.startTime } }, // Check for overlap
-        ],
-    });
-
-    return existingEvent ? true : false;
-};
 
 export const Event = mongoose.model('Event', eventSchema);

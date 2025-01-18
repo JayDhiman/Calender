@@ -3,12 +3,14 @@ import cookieParser from "cookie-parser"
 import cors from 'cors'
 import authRoutes from "./routes/user.routes.js"
 import eventRoutes from "./routes/events.routes.js"
-import startCronJobs from "./service/cronService.js"
 import errorHandler from "./middleware/errorHandler.middleware.js"
+import morganMiddleware from "./utilities/morganLogger.js"
 
 
 const app = express()
 
+
+app.use(morganMiddleware);
 //middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL,
@@ -25,7 +27,7 @@ app.use(express.json({
 }))
 app.use(urlencoded({extended:true,limit:"16kb"}))
 app.use(express.static("public"))
-startCronJobs()
+
 
 // Routes
 app.use('/api/v1/auth', authRoutes); // User authentication routes
